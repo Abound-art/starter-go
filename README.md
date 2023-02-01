@@ -1,55 +1,74 @@
-# ABOUND Starter Repo - Golang
+# ABOUND Starter Repo - Go
 
-This is a starter repository for an ABOUND algorithm written in golang.
+This is a starter repository for an ABOUND algorithm written in [Go](https://go.dev/).
 
 * Unsure on what ABOUND is? Check out https://abound.art
 * Looking for another language? Check out our other options for starter repos [here](https://abound.art/artists)
-* New to Golang Modules? Make sure to understand the basics [here](https://go.dev/blog/using-go-modules).
+* New to Go Modules? Learn the basics [here](https://go.dev/blog/using-go-modules).
 
 ## What is in this repo
 
-This repo includes all of the scaffolding to execute a function that takes
-in arbitrary input data (that can be JSON serialized) and produce an image
-(either a PNG or SVG). In short, this repo does everything except implement your
-art algorithm, which will generally look like this:
+This repo includes all of the scaffolding to build an algorithm for ABOUND. That means:
 
-```
-type MyAlgoConfig struct {
-    Seed int `json:"seed"`
-    // ... any arguments/parameters your algo needs here
+1. Reading in the JSON configuration for a run
+2. Generating art (using a [Lorenz attractor](https://en.wikipedia.org/wiki/Lorenz_system) as an example)
+3. Writing the output to a file
+
+In short, this repo does everything except implement your art algorithm, which
+will generally look like this:
+
+```go
+// AlgoConfig is all the parameters your algorithm takes as input.
+type AlgoConfig struct {
+  Seed int `json:"seed"`
 }
 
-func (config *MyAlgoConfig) Run() (image.Image, error) {
-    // Your code here which generates the image from the config.
+func Run(cfg *AlgoConfig) (image.Image, error) {
+  // Your code here which generates the image from the config.
 }
 ```
 
-It also includes an example art function (a lorenz attractor)
-which stands in for the code you would write to implement an art algorithm.
+## Run locally + Testing your code
 
-## How to run locally / test your code
-
+```bash
+export ABOUND_CONFIG_PATH=example_input.json
+export ABOUND_OUTPUT_PATH=output.png
+go run ./cmd/algo
 ```
-./lorenz/main/test/run.sh
+
+Will generate a piece of art at `output.png` that looks like this:
+
+![An example output of the Lorenz attractor algorithm, a blue and green spiral](/example_output.png)
+
+To start implementing your algorithm, replace the `Config` and `Run` function
+in [`algo.go`](/algo/algo.go) with your own. It's also worth noting that the
+example algorithm produces raster images, meaning they're made of pixels and
+are output as [PNG](https://en.wikipedia.org/wiki/PNG) files, but you can also
+write algorithms that produce vector images, meaning they're made of geometric
+shapes and are output as [SVG](https://en.wikipedia.org/wiki/SVG) files.
+
+### As a Docker container
+
+To test the algorithm in a Docker container, run:
+
+```bash
+./scripts/build_image.sh
+./scripts/run_image.sh <config path> <output path>
 ```
 
-will generate a piece of art at `/lorenz/main/test/output.png`
-from the input parameters in `lorenz/main/test/input.json`.
-This is just a thin wrapper around `go run ./lorenz/main/main.go`,
-which sets the appropriate environment variables to consume `input.json` and produce
-(`output.png`). 
+Where `<config path>` defaults to `example_input.json` and `<output path>`
+defaults to `output.png`.
 
-You can copy the lorenz package and its contents to get started implementing
-your algorithm, and then run `./myalgo/main/test/run.sh` to test it out locally
-using your test input configuration.
+## Packaging for Deployment
 
-## Packaging for deployment
+Algorithms are uploaded to ABOUND as Docker containers. The example algo can be
+built by running:
 
-From the root of the repository, run 
-
+```bash
+./scripts/build_image.sh
 ```
-docker build -f lorenz/main/Dockerfile .
-```
+
+Which will build the example image and tag it `abound-starter-go`.
 
 ## Deploying on ABOUND 
 
@@ -57,9 +76,15 @@ Head to https://abound.art/artists for the most recent instructions on how to up
 your algorithm once it is written. Make sure to read through the constraints carefully
 to make sure that your algorithm conforms to them prior to submission.
 
-Once you're ready to upload, tag the binary with this command
+Once you're ready to upload, tag and push the image with:
 
+```bash
+docker tag <local tag> <image name given by ABOUND>
+docker push <image name given by ABOUND>
+```
 
-```
-docker build -t [Tag given by ABOUND] -f [Your Algo]/main/Dockerfile .
-```
+If you haven't changed the example configuration in this repo, the `<local
+tag>` defaults to `abound-starter-go`.
+
+The `docker push` command will fail if you aren't already authenticated with
+your ABOUND credentials.

@@ -1,4 +1,6 @@
-package lorenz
+// Package algo implements a Lorenz attractor, see
+// https://en.wikipedia.org/wiki/Lorenz_system
+package algo
 
 import (
 	"image"
@@ -15,7 +17,7 @@ type Config struct {
 	ResultSize int     `json:"result_size"`
 }
 
-func (c *Config) Run() image.Image {
+func Run(c *Config) image.Image {
 	points := make([]*Point, c.Iterations)
 	points[0] = &Point{1, 1, 1}
 	bounds := &Bounds{&Point{1, 1, 1}, &Point{1, 1, 1}}

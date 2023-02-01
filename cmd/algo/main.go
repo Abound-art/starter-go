@@ -1,3 +1,5 @@
+// Command algo implements a basic algorithm that can be run on the ABOUND
+// platform.
 package main
 
 import (
@@ -5,7 +7,7 @@ import (
 	"log"
 
 	"github.com/Abound-art/starter-go/abound"
-	"github.com/Abound-art/starter-go/lorenz"
+	"github.com/Abound-art/starter-go/algo"
 )
 
 func main() {
@@ -15,15 +17,16 @@ func main() {
 }
 
 func run() error {
-	var config *lorenz.Config
+	var config *algo.Config
 	if err := abound.LoadConfig(&config); err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	img := config.Run()
+	img := algo.Run(config)
 
-	if err := abound.WriteImage(img); err != nil {
+	if err := abound.WritePNG(img); err != nil {
 		return fmt.Errorf("writing image: %w", err)
 	}
+
 	return nil
 }

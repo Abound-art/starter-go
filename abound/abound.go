@@ -1,3 +1,5 @@
+// Package abound provides some helper utilities for reading configuration and
+// writing output images.
 package abound
 
 import (
@@ -10,12 +12,18 @@ import (
 )
 
 const (
-	ConfigPathEnvVar = "THEAPP_CONFIG_PATH"
-	OutputPathEnvVar = "THEAPP_OUTPUT_PATH"
+	ConfigPathEnvVar = "ABOUND_CONFIG_PATH"
+	OutputPathEnvVar = "ABOUND_OUTPUT_PATH"
 )
 
-func LoadConfig(v interface{}) error {
-	f, err := os.Open(os.Getenv(ConfigPathEnvVar))
+// LoadConfig parses an ABOUND configuration from its specified location into
+// the provided structure.
+func LoadConfig(v any) error {
+	cfgPath := os.Getenv(ConfigPathEnvVar)
+	if cfgPath == "" {
+		return fmt.Errorf("environment variable for algo configuration (%q) was not set, are you running on ABOUND?", ConfigPathEnvVar)
+	}
+	f, err := os.Open(cfgPath)
 	if err != nil {
 		return fmt.Errorf("failed to read config file: %w", err)
 	}
@@ -28,6 +36,7 @@ func LoadConfig(v interface{}) error {
 	return nil
 }
 
+// WriteSVG writes an SVG-formatted string to the target output path.
 func WriteSVG(svg string) error {
 	f, err := os.Create(os.Getenv(OutputPathEnvVar))
 	if err != nil {
@@ -45,7 +54,8 @@ func WriteSVG(svg string) error {
 	return nil
 }
 
-func WriteImage(img image.Image) error {
+// WritePNG writes a PNG-formatted image to the target output path.
+func WritePNG(img image.Image) error {
 	f, err := os.Create(os.Getenv(OutputPathEnvVar))
 	if err != nil {
 		return fmt.Errorf("failed to create ouput image file: %w", err)
