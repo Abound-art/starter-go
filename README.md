@@ -18,12 +18,12 @@ In short, this repo does everything except implement your art algorithm, which
 will generally look like this:
 
 ```go
-// AlgoConfig is all the parameters your algorithm takes as input.
-type AlgoConfig struct {
+// Config is all the parameters your algorithm takes as input.
+type Config struct {
   Seed int `json:"seed"`
 }
 
-func Run(cfg *AlgoConfig) (image.Image, error) {
+func Run(cfg *Config) image.Image {
   // Your code here which generates the image from the config.
 }
 ```
@@ -40,12 +40,13 @@ Will generate a piece of art at `output.png` that looks like this:
 
 ![An example output of the Lorenz attractor algorithm, a blue and green spiral](/example_output.png)
 
-To start implementing your algorithm, replace the `Config` and `Run` function
-in [`algo.go`](/algo/algo.go) with your own. It's also worth noting that the
-example algorithm produces raster images, meaning they're made of pixels and
-are output as [PNG](https://en.wikipedia.org/wiki/PNG) files, but you can also
-write algorithms that produce vector images, meaning they're made of geometric
-shapes and are output as [SVG](https://en.wikipedia.org/wiki/SVG) files.
+To start implementing your algorithm, replace the `Config` struct and `Run`
+function in [`algo.go`](/algo/algo.go) with your own. It's also worth noting
+that the example algorithm produces raster images, meaning they're made of
+pixels and are output as [PNG](https://en.wikipedia.org/wiki/PNG) files, but
+you can also write algorithms that produce vector images, meaning they're made
+of geometric shapes and are output as
+[SVG](https://en.wikipedia.org/wiki/SVG) files.
 
 ### As a Docker container
 
